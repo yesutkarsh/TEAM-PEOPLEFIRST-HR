@@ -11,6 +11,22 @@ import type {
   TeamLeaveEntry,
 } from "../types/leave";
 import { request } from "./client";
+import { settingsApi } from "./settings";
+
+async function calendarContext() {
+  const [cal, hol, nat] = await Promise.all([
+    settingsApi.getWorkCalendar(),
+    settingsApi.listCompanyHolidays(),
+    settingsApi.getNationalHolidays("IN"),
+  ]);
+  const working = new Set(cal.data?.workingDays ?? [1, 2, 3, 4, 5]);
+  const nonWorkingDays = [0, 1, 2, 3, 4, 5, 6].filter((d) => !working.has(d));
+  const holidays = [
+    ...(hol.data ?? []).map((h) => new Date(`${h.date}T00:00:00`)),
+    ...(nat.data ?? []).filter((h) => h.observed).map((h) => new Date(`${h.date}T00:00:00`)),
+  ].filter((d) => !Number.isNaN(d.getTime()));
+  return { nonWorkingDays, holidays };
+}
 
 export const leaveApi = {
   // Leave Types
@@ -140,5 +156,13 @@ export const leaveApi = {
       return { data: formatted, error: null };
     }
     return { data: null, error: res.error };
+  },
+
+  async getCalendarContext() {
+    return calendarContext();
+  },
+
+  async listBalances(employeeId: string, year?: number): Promise<ApiResponse<LeaveBalance[]>> {
+    return this.getBalances(employeeId, year);
   },
 };
