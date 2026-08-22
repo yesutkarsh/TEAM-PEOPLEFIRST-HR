@@ -111,3 +111,8 @@ dist
 
 # TernJS port file
 .tern-port
+
+# build outputs
+.output
+.wrangler
+.DS_Store
