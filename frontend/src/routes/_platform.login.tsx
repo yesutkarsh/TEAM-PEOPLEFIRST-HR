@@ -61,34 +61,29 @@ function LoginPage() {
         <h1 className="text-[32px] font-semibold tracking-[-0.01em]">Welcome back.</h1>
         <p className="mt-1 text-[14px] text-[#6B6B6B]">Sign in to your workspace.</p>
 
-        <div className="mt-6 rounded-lg border border-dashed border-[#E5E5E3] bg-[#FAFAF8] p-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6B6B6B]">
-            Explore a demo role
-          </p>
-          <div className="mt-2.5 space-y-1.5">
-            {DEMO_ACCOUNTS.map((a) => (
-              <div key={a.key} className="flex items-center gap-2 rounded-md bg-white border border-[#E5E5E3] px-3 py-2">
-                <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-semibold text-[#0A0A0A]">{a.label}</p>
-                  <p className="truncate text-[11px] text-[#6B6B6B]">{a.blurb}</p>
-                </div>
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => { setEmail(a.email); setPassword(a.password); void signIn(a.email, a.password); }}
-                  className="shrink-0 rounded-md px-2.5 py-1.5 text-[12px] font-semibold text-white active:scale-95 transition disabled:opacity-50"
-                  style={{ background: "var(--tenant-primary)" }}
-                >
-                  Sign in
-                </button>
-              </div>
-            ))}
-          </div>
-          <p className="mt-2 text-[11px] text-[#6B6B6B]">
-            Platform admin?{" "}
-            <Link to="/admin/login" className="underline underline-offset-4 text-[#0A0A0A]">Admin portal →</Link>
+        <div 
+          onClick={() => {
+            setEmail("admin@example.com");
+            setPassword("admin123");
+            void signIn("admin@example.com", "admin123");
+          }}
+          className="mt-5 rounded-lg border border-[#E5E5E3] bg-[#FAFAF8] px-4 py-3 text-[13px] text-[#6B6B6B] cursor-pointer hover:border-[#F97316] hover:bg-[#FFF7ED] transition duration-150 group"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              setEmail("admin@example.com");
+              setPassword("admin123");
+              void signIn("admin@example.com", "admin123");
+            }
+          }}
+        >
+          <p>
+            <span className="font-semibold text-[#0A0A0A] group-hover:text-[#EA580C]">Quick demo sign-in:</span> Click here to auto-fill and log in with <code className="bg-[#E5E5E3] group-hover:bg-[#FFEDD5] px-1.5 py-0.5 rounded text-[#0A0A0A] font-mono">admin@example.com</code> / <code className="bg-[#E5E5E3] group-hover:bg-[#FFEDD5] px-1.5 py-0.5 rounded text-[#0A0A0A] font-mono">admin123</code>.
           </p>
         </div>
+
+
 
         <form onSubmit={submit} noValidate className="mt-6 space-y-5">
           <Input

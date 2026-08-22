@@ -25,6 +25,7 @@ import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppAnnouncementsRouteImport } from './routes/_app.announcements'
 import { Route as AppAiAssistantRouteImport } from './routes/_app.ai-assistant'
 import { Route as PortalPortalIndexRouteImport } from './routes/_portal.portal.index'
+import { Route as PlatformOnboardingIndexRouteImport } from './routes/_platform.onboarding.index'
 import { Route as AppReportsIndexRouteImport } from './routes/_app.reports.index'
 import { Route as AppPerformanceIndexRouteImport } from './routes/_app.performance.index'
 import { Route as AppPayrollIndexRouteImport } from './routes/_app.payroll.index'
@@ -177,6 +178,11 @@ const PortalPortalIndexRoute = PortalPortalIndexRouteImport.update({
   id: '/portal/',
   path: '/portal/',
   getParentRoute: () => PortalRoute,
+} as any)
+const PlatformOnboardingIndexRoute = PlatformOnboardingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PlatformOnboardingRoute,
 } as any)
 const AppReportsIndexRoute = AppReportsIndexRouteImport.update({
   id: '/reports/',
@@ -640,6 +646,7 @@ export interface FileRoutesByFullPath {
   '/payroll/': typeof AppPayrollIndexRoute
   '/performance/': typeof AppPerformanceIndexRoute
   '/reports/': typeof AppReportsIndexRoute
+  '/onboarding/': typeof PlatformOnboardingIndexRoute
   '/portal/': typeof PortalPortalIndexRoute
   '/admin/tenants/$tenantId': typeof AdminAdminTenantsTenantIdRoute
   '/admin/tenants/new': typeof AdminAdminTenantsNewRoute
@@ -687,7 +694,6 @@ export interface FileRoutesByTo {
   '/org-chart': typeof AppOrgChartRoute
   '/settings': typeof AppSettingsRouteWithChildren
   '/login': typeof PlatformLoginRoute
-  '/onboarding': typeof PlatformOnboardingRouteWithChildren
   '/admin/dashboard': typeof AdminAdminDashboardRoute
   '/admin/login': typeof AdminAdminLoginRoute
   '/admin/settings': typeof AdminAdminSettingsRoute
@@ -727,6 +733,7 @@ export interface FileRoutesByTo {
   '/payroll': typeof AppPayrollIndexRoute
   '/performance': typeof AppPerformanceIndexRoute
   '/reports': typeof AppReportsIndexRoute
+  '/onboarding': typeof PlatformOnboardingIndexRoute
   '/portal': typeof PortalPortalIndexRoute
   '/admin/tenants/$tenantId': typeof AdminAdminTenantsTenantIdRoute
   '/admin/tenants/new': typeof AdminAdminTenantsNewRoute
@@ -822,6 +829,7 @@ export interface FileRoutesById {
   '/_app/payroll/': typeof AppPayrollIndexRoute
   '/_app/performance/': typeof AppPerformanceIndexRoute
   '/_app/reports/': typeof AppReportsIndexRoute
+  '/_platform/onboarding/': typeof PlatformOnboardingIndexRoute
   '/_portal/portal/': typeof PortalPortalIndexRoute
   '/_admin/admin/tenants/$tenantId': typeof AdminAdminTenantsTenantIdRoute
   '/_admin/admin/tenants/new': typeof AdminAdminTenantsNewRoute
@@ -914,6 +922,7 @@ export interface FileRouteTypes {
     | '/payroll/'
     | '/performance/'
     | '/reports/'
+    | '/onboarding/'
     | '/portal/'
     | '/admin/tenants/$tenantId'
     | '/admin/tenants/new'
@@ -961,7 +970,6 @@ export interface FileRouteTypes {
     | '/org-chart'
     | '/settings'
     | '/login'
-    | '/onboarding'
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/settings'
@@ -1001,6 +1009,7 @@ export interface FileRouteTypes {
     | '/payroll'
     | '/performance'
     | '/reports'
+    | '/onboarding'
     | '/portal'
     | '/admin/tenants/$tenantId'
     | '/admin/tenants/new'
@@ -1095,6 +1104,7 @@ export interface FileRouteTypes {
     | '/_app/payroll/'
     | '/_app/performance/'
     | '/_app/reports/'
+    | '/_platform/onboarding/'
     | '/_portal/portal/'
     | '/_admin/admin/tenants/$tenantId'
     | '/_admin/admin/tenants/new'
@@ -1254,6 +1264,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/'
       preLoaderRoute: typeof PortalPortalIndexRouteImport
       parentRoute: typeof PortalRoute
+    }
+    '/_platform/onboarding/': {
+      id: '/_platform/onboarding/'
+      path: '/'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof PlatformOnboardingIndexRouteImport
+      parentRoute: typeof PlatformOnboardingRoute
     }
     '/_app/reports/': {
       id: '/_app/reports/'
@@ -2062,12 +2079,14 @@ interface PlatformOnboardingRouteChildren {
   PlatformOnboardingAdminRoute: typeof PlatformOnboardingAdminRoute
   PlatformOnboardingBrandRoute: typeof PlatformOnboardingBrandRoute
   PlatformOnboardingReviewRoute: typeof PlatformOnboardingReviewRoute
+  PlatformOnboardingIndexRoute: typeof PlatformOnboardingIndexRoute
 }
 
 const PlatformOnboardingRouteChildren: PlatformOnboardingRouteChildren = {
   PlatformOnboardingAdminRoute: PlatformOnboardingAdminRoute,
   PlatformOnboardingBrandRoute: PlatformOnboardingBrandRoute,
   PlatformOnboardingReviewRoute: PlatformOnboardingReviewRoute,
+  PlatformOnboardingIndexRoute: PlatformOnboardingIndexRoute,
 }
 
 const PlatformOnboardingRouteWithChildren =

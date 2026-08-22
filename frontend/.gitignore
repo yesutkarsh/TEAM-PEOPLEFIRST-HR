@@ -116,3 +116,4 @@ dist
 .output
 .wrangler
 .DS_Store
+.node_modules

@@ -1,31 +1,8 @@
-/** Auth — mocked. Credentials live alongside tenants in localStorage. */
+/** Auth — HTTP Client connected to Next.js API. */
 import type { ApiResponse } from "../types/api";
 import type { User } from "../types/user";
 import type { Tenant } from "../types/tenant";
-import { delay, fail, ok, uid } from "./client";
-import { tenantsApi } from "./tenants";
-
-const CRED_KEY = "hrms.credentials";
-
-interface Credential {
-  email: string;
-  password: string;
-  user: User;
-}
-
-function readCreds(): Credential[] {
-  if (typeof window === "undefined") return [];
-  try {
-    return JSON.parse(window.localStorage.getItem(CRED_KEY) ?? "[]") as Credential[];
-  } catch {
-    return [];
-  }
-}
-
-function writeCreds(list: Credential[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(CRED_KEY, JSON.stringify(list));
-}
+import { request, ok } from "./client";
 
 export const authApi = {
   async register(input: {
@@ -34,44 +11,45 @@ export const authApi = {
     password: string;
     tenantId: string;
   }): Promise<ApiResponse<{ user: User; token: string }>> {
-    const creds = readCreds();
-    if (creds.some((c) => c.email === input.email)) {
-      return delay(fail("An account with this email already exists."));
+    const res = await request<{ user: User; token: string }>("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+
+    if (res.data) {
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("hrms.token", res.data.token);
+        window.localStorage.setItem("hrms.user", JSON.stringify(res.data.user));
+      }
     }
-    const user: User = {
-      id: uid("u_"),
-      tenantId: input.tenantId,
-      fullName: input.fullName,
-      email: input.email,
-      role: "hr_admin",
-    };
-    writeCreds([...creds, { email: input.email, password: input.password, user }]);
-    return delay(ok({ user, token: uid("tok_") }));
+    return res;
   },
 
   async login(
     email: string,
     password: string,
   ): Promise<ApiResponse<{ user: User; token: string; tenant: Tenant }>> {
-    const cred = readCreds().find((c) => c.email === email);
-    if (!cred || cred.password !== password) {
-      return delay(fail("Incorrect email or password."));
-    }
-    const tenantRes = await tenantsApi.findByEmail(cred.user.email).catch(() => null);
-    // Look up by tenant id when contact email differs from user email
-    const allTenants: Tenant[] = (() => {
-      try {
-        return JSON.parse(window.localStorage.getItem("hrms.tenants") ?? "[]") as Tenant[];
-      } catch {
-        return [];
+    const res = await request<{ user: User; token: string; tenant: Tenant }>("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (res.data) {
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("hrms.token", res.data.token);
+        window.localStorage.setItem("hrms.user", JSON.stringify(res.data.user));
+        window.localStorage.setItem("hrms.tenant", JSON.stringify(res.data.tenant));
       }
-    })();
-    const tenant = tenantRes?.data ?? allTenants.find((t) => t.id === cred.user.tenantId);
-    if (!tenant) return delay(fail("Workspace not found."));
-    return delay(ok({ user: cred.user, token: uid("tok_"), tenant }));
+    }
+    return res;
   },
 
   async logout(): Promise<ApiResponse<true>> {
-    return delay(ok(true as const));
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("hrms.token");
+      window.localStorage.removeItem("hrms.user");
+      window.localStorage.removeItem("hrms.tenant");
+    }
+    return ok(true as const);
   },
 };
